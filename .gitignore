@@ -52,9 +52,7 @@ next-env.d.ts
 /worker/*
 !/worker/index.ts
 !/vite.config.ts
-/worker/
 /package-lock.json
 /drizzle.config.ts
-/vite.config.ts
 /outputs/
 /work/
