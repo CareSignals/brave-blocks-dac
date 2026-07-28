@@ -27,10 +27,9 @@ family-specific and belief-specific content.
 5. Talk Power-Up
 6. Build Mode
 7. Safety Power-Ups
-8. Pixel Parkour
-9. Music Power-Up
-10. Courage Campfire
-11. Feeling Machine
+8. Music Power-Up
+9. Courage Campfire
+10. Feeling Machine
 
 The Courage Campfire uses fictional character stories only. The Music Power-Up
 opens a neutral music landing page only after a deliberate tap and does not

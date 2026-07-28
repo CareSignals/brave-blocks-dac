@@ -9,12 +9,12 @@ const packageFile = JSON.parse(await readFile(new URL("../package.json", import.
 const narrationIndex = JSON.parse(await readFile(new URL("../app/narration-index.json", import.meta.url), "utf8"));
 const childNarrationIndex = JSON.parse(await readFile(new URL("../app/narration-index.child.json", import.meta.url), "utf8"));
 
-test("Feeling Machine is the eleventh Brave Blocks quest", () => {
+test("Feeling Machine is the tenth Brave Blocks quest", () => {
   assert.match(page, /id: "machine" as Quest[\s\S]*?title: "Feeling Machine"/);
   assert.match(page, /tag: "MACHINE MODE"/);
-  assert.match(page, /aria-valuemax=\{11\}/);
-  assert.match(page, /\[0,1,2,3,4,5,6,7,8,9,10\]\.map/);
-  assert.match(page, /All 11 quests/);
+  assert.match(page, /aria-valuemax=\{10\}/);
+  assert.match(page, /\[0,1,2,3,4,5,6,7,8,9\]\.map/);
+  assert.match(page, /All 10 quests/);
 });
 
 test("Feeling Machine keeps the full DBT-informed cycle inside five child-facing stages", () => {

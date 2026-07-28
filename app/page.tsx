@@ -19,7 +19,7 @@ import {
 import type { EasterEgg } from "./profile.types";
 import type { PowerNeedId, SongTrack } from "./song-library.types";
 
-type Quest = "home" | "feelings" | "body" | "calm" | "loadout" | "meeting" | "base" | "safety" | "parkour" | "beats" | "stories" | "machine" | "grownups";
+type Quest = "home" | "feelings" | "body" | "calm" | "loadout" | "meeting" | "base" | "safety" | "beats" | "stories" | "machine" | "grownups";
 type Loot = { icon: string; name: string; line: string };
 type AdultArea = "guide" | "install";
 type OfflineStatus = "checking" | "caching" | "ready" | "error" | "unsupported";
@@ -604,7 +604,7 @@ function OfflineReadinessIndicator({ status }: { status: OfflineStatus }) {
   const copy = {
     checking: ["Checking offline pack…", "Keep this page connected for a moment."],
     caching: ["Saving offline pack…", "Keep this page online until the ready message appears."],
-    ready: ["Ready for offline play", "All 11 quests, HEAR IT narration, icons, and built-in sounds are saved."],
+    ready: ["Ready for offline play", "All 10 quests, HEAR IT narration, icons, and built-in sounds are saved."],
     error: ["Offline pack needs Wi-Fi", "Reconnect, reopen Brave Blocks, and wait for the ready message."],
     unsupported: ["Offline play is unavailable", "This browser does not support the offline game pack."],
   }[status];
@@ -908,7 +908,6 @@ function Home({
     { id: "meeting" as Quest, icon: "🛡️", title: "Talk Power-Up", text: "Choose your move", color: "orange", tag: "ROLE-PLAY MODE" },
     { id: "base" as Quest, icon: "🏰", title: "Build Mode", text: "Stack your squad", color: "green", tag: "CREATIVE MODE" },
     { id: "safety" as Quest, icon: "👐", title: "Safety Power-Ups", text: "Give your body a mission", color: "red", tag: "GENTLE MODE" },
-    { id: "parkour" as Quest, icon: "☁️", title: "Pixel Parkour", text: "Jump the slime", color: "teal", tag: "ARCADE MODE" },
     { id: "beats" as Quest, icon: "🎵", title: activeProfile.stationTitle, text: activeProfile.stationSubtitle, color: "pink", tag: "MUSIC MODE" },
     { id: "stories" as Quest, icon: "✨", title: "Courage Campfire", text: "Tap a crew story", color: "gold", tag: "STORY MODE" },
     { id: "machine" as Quest, icon: "🌀", title: "Feeling Machine", text: "Run a feeling. Change the ending", color: "purple", tag: "MACHINE MODE" },
@@ -1688,59 +1687,6 @@ function SafetyQuest({ earn, skip, muted }: { earn: () => void; skip: () => void
   </QuestShell>;
 }
 
-function ParkourQuest({ earn, avatar, muted }: { earn: () => void; avatar: string; muted: boolean }) {
-  const track = ["🏁", "⭐", "🟢", "🫧", "🧱", "💚", "🟢", "🥟", "⭐", "🏆"];
-  const obstacles = new Set([2, 4, 6]);
-  const [position, setPosition] = useState(0);
-  const [jumping, setJumping] = useState(false);
-  const [stars, setStars] = useState(0);
-  const [bonk, setBonk] = useState(false);
-  const finished = position === track.length - 1;
-
-  const jump = () => {
-    if (finished) return;
-    playSound("open", muted);
-    setJumping(true);
-    setBonk(false);
-    say("Jump ready!");
-  };
-  const move = () => {
-    if (finished) return;
-    const next = position + 1;
-    if (obstacles.has(next) && !jumping) {
-      setBonk(true);
-      playSound("tap", muted);
-      say("Boink! Tap jump first.");
-      return;
-    }
-    if (track[next] === "⭐" || track[next] === "💚" || track[next] === "🥟") {
-      setStars((value) => value + 1);
-      playSound("win", muted);
-    } else playSound("tap", muted);
-    setPosition(next);
-    setJumping(false);
-    setBonk(false);
-    if (next === track.length - 1) say("Parkour W. You made it!");
-  };
-  const reset = () => { setPosition(0); setJumping(false); setStars(0); setBonk(false); };
-
-  return <QuestShell title="Pixel Parkour" subtitle="Jump slime. Grab snacks. Get the W." icon="☁️">
-    <div className="parkour-hud" role="status" aria-atomic="true"><span><PixelIcon icon="⭐" /> LOOT {stars}</span><strong>{finished ? "LEVEL CLEARED!" : jumping ? "JUMP LOADED!" : bonk ? "BOINK! JUMP FIRST!" : "READY, PLAYER ONE?"}</strong></div>
-    <div className="parkour-world" role="img" aria-label={`Pixel Parkour track. Player is on space ${position + 1} of ${track.length}, with ${stars} loot.`}>
-      <div className="park-cloud pc1" /><div className="park-cloud pc2" />
-      <div className="track">{track.map((item, index) => <div key={index} className={obstacles.has(index) ? "track-cell obstacle" : "track-cell"}>
-        {index === position && <span className={jumping ? "runner jumping" : "runner"}><PixelIcon icon={avatar} /></span>}
-        {index !== position && <i><PixelIcon icon={item} /></i>}
-      </div>)}</div>
-    </div>
-    <div className="arcade-controls">
-      <button onClick={jump} disabled={finished}><PixelIcon icon="⬆️" /><strong>JUMP</strong></button>
-      <button onClick={move} disabled={finished}><PixelIcon icon="➡️" /><strong>GO</strong></button>
-    </div>
-    {finished && <div className="parkour-win"><span><PixelIcon icon="🥟" /></span><h3>DUMPLING SUPREME SAYS:</h3><p>“Tiny jumps still move you forward.”</p><button className="primary" onClick={earn}>CLAIM ARCADE LOOT →</button><button className="secondary" onClick={reset}>PLAY AGAIN</button></div>}
-  </QuestShell>;
-}
-
 function MusicPowerUp({
   earn,
   skip,
@@ -2082,7 +2028,7 @@ export default function HomePage() {
     setNarrationMuted(muted);
   }, [muted]);
 
-  const names: Record<Quest, string> = { home: "", feelings: "Vibe Gem", body: "Radar Chip", calm: "Dragon Shield", loadout: "Choice Pack", meeting: "Talk Shield", base: "Safe Base", safety: "Gentle Hands Glow", parkour: "Cloud Crown", beats: "Music Disc", stories: "Courage Gem", machine: "Plot-Twist Core", grownups: "" };
+  const names: Record<Quest, string> = { home: "", feelings: "Vibe Gem", body: "Radar Chip", calm: "Dragon Shield", loadout: "Choice Pack", meeting: "Talk Shield", base: "Safe Base", safety: "Gentle Hands Glow", beats: "Music Disc", stories: "Courage Gem", machine: "Plot-Twist Core", grownups: "" };
   const pageWords: Record<Quest, string> = {
     home: "Welcome back, player. Pick your character. Then pick your next W.",
     feelings: "Vibe Mixer. Tap every feeling in your mix.",
@@ -2092,7 +2038,6 @@ export default function HomePage() {
     meeting: "Talk Power Up. Pick any words that tell the grown-up what you need.",
     base: "Build Mode. Tap your support blocks.",
     safety: "Safety Power Ups. Pick a safe mission for your hands, body, words, and repairs.",
-    parkour: "Pixel Parkour. Tap jump before slime or blocks. Then tap go.",
     beats: "Music Power-Up. Pick a body signal, choose music with a trusted grown-up, and check the signal again.",
     stories: "Courage Campfire. Tap a Chaos Crew story and find a courage gem.",
     machine: "Feeling Machine. Pick a pretend story. Scan five steps. Change the ending. Your own details are optional.",
@@ -2203,7 +2148,6 @@ export default function HomePage() {
   else if (quest === "meeting") content = <MeetingQuest earn={earn} muted={muted} />;
   else if (quest === "base") content = <BaseQuest earn={earn} muted={muted} />;
   else if (quest === "safety") content = <SafetyQuest earn={earn} skip={skipQuest} muted={muted} />;
-  else if (quest === "parkour") content = <ParkourQuest earn={earn} avatar={avatar} muted={muted} />;
   else if (quest === "beats") content = <MusicPowerUp earn={earnSignalCheck} skip={skipQuest} muted={muted} />;
   else if (quest === "stories") content = <CourageCampfire earn={earn} muted={muted} />;
   else if (quest === "machine") content = <FeelingMachine earn={earn} skip={skipQuest} muted={muted} />;
@@ -2225,7 +2169,7 @@ export default function HomePage() {
     openInstallSetup={() => unlockAdultArea("install")}
     requestInstallCheck={() => setAdultGateTarget("install")}
   />;
-  const growthHearts = Math.min(11, badges.length + 1);
+  const growthHearts = Math.min(10, badges.length + 1);
 
   return <main>
     <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</div>
@@ -2236,10 +2180,10 @@ export default function HomePage() {
         role="progressbar"
         aria-label="Brave growth hearts. Hearts only fill and never go down."
         aria-valuemin={1}
-        aria-valuemax={11}
+        aria-valuemax={10}
         aria-valuenow={growthHearts}
-        aria-valuetext={`${growthHearts} of 11 growth hearts filled. This meter only grows.`}
-      ><small className="growth-label" aria-hidden="true">GROWTH</small>{[0,1,2,3,4,5,6,7,8,9,10].map((i) => <PixelHeart key={i} filled={i < growthHearts} />)}</div></div>
+        aria-valuetext={`${growthHearts} of 10 growth hearts filled. This meter only grows.`}
+      ><small className="growth-label" aria-hidden="true">GROWTH</small>{[0,1,2,3,4,5,6,7,8,9].map((i) => <PixelHeart key={i} filled={i < growthHearts} />)}</div></div>
       <div className="header-actions">
         <button className="sound-button" aria-pressed={muted} onClick={() => setMuted((m) => !m)} aria-label={muted ? "Turn sound on" : "Turn sound off"}><PixelIcon icon={muted ? "🔇" : "🔊"} /></button>
         <button className="voice-button" onClick={() => setShowVoiceLab(true)} aria-label="Hear about the Pixel Quest Host narrator"><PixelIcon icon="🎮" /><span>VOICE</span></button>
