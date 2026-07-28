@@ -1,0 +1,76 @@
+name: Deploy Brave Blocks DAC Review
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAGES: "true"
+      NEXT_PUBLIC_SITE_ORIGIN: "https://caresignals.github.io"
+      NEXT_PUBLIC_BASE_PATH: "/brave-blocks-dac"
+      NEXT_PUBLIC_BRAVE_BLOCKS_EDITION: "REVIEW"
+      NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE: "GENERIC"
+      BRAVE_BLOCKS_BUILD_REVISION: "${{ github.sha }}"
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test child-facing pathways
+        run: pnpm test
+
+      - name: Build the neutral review edition
+        run: pnpm pages:build:review
+
+      - name: Audit the exported edition
+        run: |
+          pnpm edition:audit
+          pnpm offline:verify
+          pnpm offline:test
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./out
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
