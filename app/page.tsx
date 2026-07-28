@@ -15,11 +15,11 @@ import {
   tracksForNeed,
   validateSongLibrary,
   type SignalChangeId,
-} from "./praise-power-up";
+} from "./music-power-up";
 import type { EasterEgg } from "./profile.types";
 import type { PowerNeedId, SongTrack } from "./song-library.types";
 
-type Quest = "home" | "feelings" | "body" | "calm" | "loadout" | "meeting" | "base" | "safety" | "parkour" | "beats" | "faith" | "machine" | "grownups";
+type Quest = "home" | "feelings" | "body" | "calm" | "loadout" | "meeting" | "base" | "safety" | "parkour" | "beats" | "stories" | "machine" | "grownups";
 type Loot = { icon: string; name: string; line: string };
 type AdultArea = "guide" | "install";
 type OfflineStatus = "checking" | "caching" | "ready" | "error" | "unsupported";
@@ -27,7 +27,7 @@ type InstallPromptEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
-const PUBLIC_BASE = "/brave-blocks";
+const PUBLIC_BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const ADULT_HOLD_MS = 3000;
 const SKIP_AFFIRMATION = "Skipping is a real move. Still a W.";
 const emojiSegmenter = typeof Intl !== "undefined" && "Segmenter" in Intl
@@ -375,7 +375,7 @@ const supportBlocks = [
 ];
 const songConfigurationErrors = validateSongLibrary(songLibrary);
 if (songConfigurationErrors.length) {
-  throw new Error(`Praise Power-Up song configuration is invalid:\n${songConfigurationErrors.join("\n")}`);
+  throw new Error(`Music Power-Up song configuration is invalid:\n${songConfigurationErrors.join("\n")}`);
 }
 const calmSteps = [
   { label: "BREATHE IN", time: 4000 }, { label: "HOLD", time: 2000 },
@@ -910,7 +910,7 @@ function Home({
     { id: "safety" as Quest, icon: "👐", title: "Safety Power-Ups", text: "Give your body a mission", color: "red", tag: "GENTLE MODE" },
     { id: "parkour" as Quest, icon: "☁️", title: "Pixel Parkour", text: "Jump the slime", color: "teal", tag: "ARCADE MODE" },
     { id: "beats" as Quest, icon: "🎵", title: activeProfile.stationTitle, text: activeProfile.stationSubtitle, color: "pink", tag: "MUSIC MODE" },
-    { id: "faith" as Quest, icon: "✨", title: "Faith Campfire", text: "Tap a Bible story", color: "gold", tag: "STORY MODE" },
+    { id: "stories" as Quest, icon: "✨", title: "Courage Campfire", text: "Tap a crew story", color: "gold", tag: "STORY MODE" },
     { id: "machine" as Quest, icon: "🌀", title: "Feeling Machine", text: "Run a feeling. Change the ending", color: "purple", tag: "MACHINE MODE" },
   ];
 
@@ -923,7 +923,7 @@ function Home({
         width={1672}
         height={941}
         priority
-        alt="Brave Blocks voxel world with Axo Maxxo, Capy Bappy, Dumpling Supreme, DJ Glorp, a safe home, a campfire, and a music stage"
+        alt="Brave Blocks voxel world with Axo Maxxo, Capy Bappy, Dumpling Supreme, DJ Glorp, a safe home, a story circle, and a music stage"
       />
       <div className="hero-status">
         <span className="status-avatar"><PixelIcon icon={avatar} /></span>
@@ -1478,7 +1478,7 @@ function MeetingLoadout({ earn, muted }: { earn: () => void; muted: boolean }) {
     { id: "pass", icon: "⏭️", label: "PASS" },
   ] as const;
   const landingMoves = [
-    { icon: "🥟", label: "Snack" }, { icon: "🎵", label: "Music" }, { icon: "🧸", label: "Cozy" }, { icon: "💃", label: "Move" }, { icon: "🙏", label: "Prayer" },
+    { icon: "🥟", label: "Snack" }, { icon: "🎵", label: "Music" }, { icon: "🧸", label: "Cozy" }, { icon: "💃", label: "Move" }, { icon: "☁️", label: "Quiet spot" },
   ];
   const [picks, setPicks] = useState<Record<string, string>>({});
   const [mode, setMode] = useState<(typeof modes)[number]["id"] | null>(null);
@@ -1741,7 +1741,7 @@ function ParkourQuest({ earn, avatar, muted }: { earn: () => void; avatar: strin
   </QuestShell>;
 }
 
-function PraisePowerUp({
+function MusicPowerUp({
   earn,
   skip,
   muted,
@@ -1793,22 +1793,22 @@ function PraisePowerUp({
     title={activeProfile.stationTitle}
     subtitle={activeProfile.stationSubtitle}
     icon="🎵"
-    spokenInstructions="Jesus loves me. I am loved on easy days and hard days."
+    spokenInstructions="Music Power-Up. Pick the kind of power your body needs, then choose music with a trusted grown-up."
   >
     <div
-      className="praise-station"
+      className="music-station"
       style={{
         "--profile-accent": activeProfile.favoriteColors[0],
         "--profile-glow": activeProfile.favoriteColors[1],
       } as React.CSSProperties}
     >
-      <div className="praise-dj">
-        <div className="praise-dj-avatar"><PixelIcon icon="🟢" /><span><PixelIcon icon="🎧" /></span></div>
+      <div className="music-dj">
+        <div className="music-dj-avatar"><PixelIcon icon="🟢" /><span><PixelIcon icon="🎧" /></span></div>
         <div><small>DJ GLORP’S MUSIC PORTAL</small><h2>{activeProfile.stationSubtitle}</h2><p>{activeProfile.stationIntro}</p></div>
       </div>
 
-      {!need && <section className="praise-step" aria-labelledby="power-need-title">
-        <div className="praise-step-heading"><span>1</span><div><small>PICK A POWER</small><h3 id="power-need-title">What kind of power does your body need?</h3></div></div>
+      {!need && <section className="music-step" aria-labelledby="power-need-title">
+        <div className="music-step-heading"><span>1</span><div><small>PICK A POWER</small><h3 id="power-need-title">What kind of power does your body need?</h3></div></div>
         <div className="power-need-grid">{powerNeeds.map((item) => <button
           key={item.id}
           className={`power-need ${item.id}`}
@@ -1823,9 +1823,9 @@ function PraisePowerUp({
         </button>)}</div>
       </section>}
 
-      {need && !song && <section className="praise-step" aria-labelledby="song-pick-title">
-        <button className="praise-back" onClick={() => setNeed(null)}>← CHANGE POWER</button>
-        <div className="praise-step-heading"><span>2</span><div><small>{selectedNeed?.label.toUpperCase()}</small><h3 id="song-pick-title">Pick a {activeProfile.musicName}</h3></div></div>
+      {need && !song && <section className="music-step" aria-labelledby="song-pick-title">
+        <button className="music-back" onClick={() => setNeed(null)}>← CHANGE POWER</button>
+        <div className="music-step-heading"><span>2</span><div><small>{selectedNeed?.label.toUpperCase()}</small><h3 id="song-pick-title">Pick a {activeProfile.musicName}</h3></div></div>
         <div className="song-card-grid">{songs.map((track) => <button
           key={track.id}
           className="song-card"
@@ -1836,11 +1836,11 @@ function PraisePowerUp({
           <div><small>FAMILY-APPROVED LINK</small><strong>{track.title}</strong><p>{track.artist}</p></div>
           <b>SELECT →</b>
         </button>)}</div>
-        <p className="song-privacy-note"><PixelIcon icon="🔐" /> Nothing opens until you tap the song link.</p>
+        <p className="song-privacy-note"><PixelIcon icon="🔐" /> Nothing opens until you tap the music link.</p>
       </section>}
 
-      {song && <section className="praise-step" aria-labelledby="mission-title">
-        <button className="praise-back" onClick={() => {
+      {song && <section className="music-step" aria-labelledby="mission-title">
+        <button className="music-back" onClick={() => {
           setSong(null);
           setMissionChoice(null);
           setHasOpenedPlaylist(false);
@@ -1851,7 +1851,7 @@ function PraisePowerUp({
         }}>{songs.length === 1 ? "← CHANGE POWER" : "← PICK ANOTHER SONG"}</button>
 
         <div className="tiny-mission">
-          <div className="praise-step-heading"><span>{songs.length === 1 ? "2" : "3"}</span><div><small>OPTIONAL SIDE QUEST</small><h3 id="mission-title">Your tiny mission</h3></div></div>
+          <div className="music-step-heading"><span>{songs.length === 1 ? "2" : "3"}</span><div><small>OPTIONAL SIDE QUEST</small><h3 id="mission-title">Your tiny mission</h3></div></div>
           <p><strong>{song.prompt}</strong><br />Pick one, or just listen. Both count.</p>
           <div>
             <button aria-pressed={missionChoice === "try"} className={missionChoice === "try" ? "active" : ""} onClick={() => setMissionChoice("try")}><PixelIcon icon="✨" /> I CAN TRY</button>
@@ -1860,7 +1860,7 @@ function PraisePowerUp({
         </div>
 
         {missionChoice && <div className="playlist-launch-card">
-          <div className="praise-step-heading"><span>{songs.length === 1 ? "3" : "4"}</span><div><small>FAMILY-APPROVED PLAYLIST</small><h3>Ready to listen?</h3></div></div>
+          <div className="music-step-heading"><span>{songs.length === 1 ? "3" : "4"}</span><div><small>TRUSTED-GROWN-UP MUSIC</small><h3>Ready to listen?</h3></div></div>
           <span><PixelIcon icon={song.icon ?? "🎵"} /></span>
           <div><strong>{song.title}</strong><p>{song.artist}</p></div>
           <a
@@ -1875,11 +1875,11 @@ function PraisePowerUp({
               playSound("open", muted);
             }}
           ><PixelIcon icon="▶️" /> {song.launchLabel ?? "PLAY FAMILY-APPROVED MUSIC"}</a>
-          <p className="playlist-privacy-note"><PixelIcon icon="🔐" /> Opens YouTube Music in a new tab. Brave Blocks cannot see which song you choose or what you do there.</p>
+          <p className="playlist-privacy-note"><PixelIcon icon="🔐" /> Opens a music site in a new tab. Brave Blocks cannot see which song you choose or what you do there.</p>
         </div>}
 
         {hasOpenedPlaylist && <div className="signal-check" role="group" aria-labelledby="signal-check-title">
-          <div className="praise-step-heading"><span>{songs.length === 1 ? "4" : "5"}</span><div><small>WELCOME BACK · CHECK AGAIN</small><h3 id="signal-check-title">Did your signal change?</h3></div></div>
+          <div className="music-step-heading"><span>{songs.length === 1 ? "4" : "5"}</span><div><small>WELCOME BACK · CHECK AGAIN</small><h3 id="signal-check-title">Did your signal change?</h3></div></div>
           <div>{signalChanges.map((choice) => <button
             key={choice.id}
             disabled={completed}
@@ -1890,18 +1890,18 @@ function PraisePowerUp({
         </div>}
       </section>}
 
-      <div className="praise-faith-note"><PixelIcon icon="💛" /><p><strong>God is with me while I feel this.</strong><br />Music missions live here. Bible stories live at Faith Campfire.</p></div>
+      <div className="music-safety-note"><PixelIcon icon="💛" /><p><strong>Every signal answer counts.</strong><br />Music may help a lot, a little, or not yet. All three are real answers.</p></div>
     </div>
     <RegulationSkip onSkip={skip} />
   </QuestShell>;
 }
 
-function FaithQuest({ earn, muted }: { earn: () => void; muted: boolean }) {
+function CourageCampfire({ earn, muted }: { earn: () => void; muted: boolean }) {
   const stories = [
-    { icon: "🧒", title: "Jesus + Children", story: "Jesus made time for children. He showed them they matter and belong.", gem: "I matter." },
-    { icon: "🐑", title: "The Lost Sheep", story: "The shepherd looked for one little sheep. Every single one mattered.", gem: "I am worth finding." },
-    { icon: "🪨", title: "David + Goliath", story: "David was small. His courage and God’s help were bigger than his fear.", gem: "Small can be brave." },
-    { icon: "🌈", title: "Noah’s Rainbow", story: "After a long storm, the rainbow was a sign of hope.", gem: "Hard times can end." },
+    { icon: "🦎", title: "Axo + First Day", story: "Axo felt shaky. He found a safe grown-up and took one tiny step.", gem: "Brave can be tiny." },
+    { icon: "🐹", title: "Cappy + Missing", story: "Cappy missed someone and let a safe person stay nearby.", gem: "Missing and safe can both be true." },
+    { icon: "🥟", title: "Dumpling + Mistake", story: "Dumpling made a mess, told the truth, and helped repair it.", gem: "Mistakes can be repaired." },
+    { icon: "🤖", title: "Both-Bot + Big Mix", story: "Both-Bot felt mad and sad. Both feelings were allowed.", gem: "Two feelings can be true." },
   ];
   const [opened, setOpened] = useState<string[]>([]);
   const [story, setStory] = useState<(typeof stories)[number] | null>(null);
@@ -1911,22 +1911,22 @@ function FaithQuest({ earn, muted }: { earn: () => void; muted: boolean }) {
     setOpened((items) => items.includes(item.title) ? items : [...items, item.title]);
     say(`${item.title}. ${item.story} ${item.gem}`);
   };
-  return <QuestShell title="Faith Campfire" subtitle="Tap a story. Find a hope gem." icon="✨">
+  return <QuestShell title="Courage Campfire" subtitle="Tap a story. Find a courage gem." icon="✨">
     <div className="campfire">
       <div className="night-stars">✦　·　✧　　✦　·　✧　　✦</div>
       <div className="fire"><PixelIcon icon="🔥" /></div>
       <div className="camp-crew"><PixelIcon icon="🦎" /><PixelIcon icon="🐹" /><PixelIcon icon="🥟" /><PixelIcon icon="🟢" /></div>
-      <h2>BIBLE STORY CAMP</h2>
+      <h2>CHAOS CREW STORY CAMP</h2>
       <div className="camp-buttons">
-        <button onClick={() => say("Jesus loves me. I am loved on easy days and hard days.")}><PixelIcon icon="🔊" /> JESUS LOVES ME</button>
+        <button onClick={() => say("I matter on easy days and hard days. I can ask for help.")}><PixelIcon icon="🔊" /> HEAR THE CAMP RULE</button>
       </div>
     </div>
     <div className="story-grid">{stories.map((item) => <button key={item.title} aria-pressed={story?.title === item.title} className={story?.title === item.title ? "story-card active" : "story-card"} onClick={() => openStory(item)}>
       <span><PixelIcon icon={item.icon} /></span><strong>{item.title}</strong><small>{opened.includes(item.title) ? "GEM FOUND ✓" : "TAP STORY"}</small>
     </button>)}</div>
     {story && <div className="story-scroll" role="status"><small>HOPE GEM UNLOCKED</small><span><PixelIcon icon={story.icon} /></span><h3>{story.title}</h3><p>{story.story}</p><strong><PixelIcon icon="💎" /> {story.gem}</strong><button onClick={() => say(`${story.story} ${story.gem}`)}><PixelIcon icon="🔊" /> HEAR AGAIN</button></div>}
-    <div className="faith-affirmation"><span><PixelIcon icon="💛" /></span><p><strong>Jesus loves me.</strong><br />I can use my own words. I can ask for help. All my feelings can come to the campfire.</p></div>
-    {opened.length >= 2 && <button className="primary center" onClick={earn}>COLLECT HOPE LOOT →</button>}
+    <div className="story-affirmation"><span><PixelIcon icon="💛" /></span><p><strong>I matter on easy days and hard days.</strong><br />I can use my own words. I can ask for help. All my feelings can come to the story circle.</p></div>
+    {opened.length >= 2 && <button className="primary center" onClick={earn}>COLLECT COURAGE LOOT →</button>}
   </QuestShell>;
 }
 
@@ -2082,7 +2082,7 @@ export default function HomePage() {
     setNarrationMuted(muted);
   }, [muted]);
 
-  const names: Record<Quest, string> = { home: "", feelings: "Vibe Gem", body: "Radar Chip", calm: "Dragon Shield", loadout: "Choice Pack", meeting: "Talk Shield", base: "Safe Base", safety: "Gentle Hands Glow", parkour: "Cloud Crown", beats: "Praise Disc", faith: "Hope Gem", machine: "Plot-Twist Core", grownups: "" };
+  const names: Record<Quest, string> = { home: "", feelings: "Vibe Gem", body: "Radar Chip", calm: "Dragon Shield", loadout: "Choice Pack", meeting: "Talk Shield", base: "Safe Base", safety: "Gentle Hands Glow", parkour: "Cloud Crown", beats: "Music Disc", stories: "Courage Gem", machine: "Plot-Twist Core", grownups: "" };
   const pageWords: Record<Quest, string> = {
     home: "Welcome back, player. Pick your character. Then pick your next W.",
     feelings: "Vibe Mixer. Tap every feeling in your mix.",
@@ -2093,8 +2093,8 @@ export default function HomePage() {
     base: "Build Mode. Tap your support blocks.",
     safety: "Safety Power Ups. Pick a safe mission for your hands, body, words, and repairs.",
     parkour: "Pixel Parkour. Tap jump before slime or blocks. Then tap go.",
-    beats: "Jesus loves me. I am loved on easy days and hard days.",
-    faith: "Faith Campfire. Tap a Bible story to find a hope gem.",
+    beats: "Music Power-Up. Pick a body signal, choose music with a trusted grown-up, and check the signal again.",
+    stories: "Courage Campfire. Tap a Chaos Crew story and find a courage gem.",
     machine: "Feeling Machine. Pick a pretend story. Scan five steps. Change the ending. Your own details are optional.",
     grownups: editionContent.grownupRouteSpeech,
   };
@@ -2126,7 +2126,7 @@ export default function HomePage() {
   const earn = () => completeQuest();
   const skipQuest = () => completeQuest(SKIP_AFFIRMATION);
   const earnSignalCheck = (affirmation: string) => {
-    completeQuest(affirmation, "Jesus loves me. I am loved on easy days and hard days.");
+    completeQuest(affirmation, "Music check complete. Every answer counts.");
   };
   const closeLoot = () => {
     if (loot) setCollection((items) => [...items, loot]);
@@ -2204,8 +2204,8 @@ export default function HomePage() {
   else if (quest === "base") content = <BaseQuest earn={earn} muted={muted} />;
   else if (quest === "safety") content = <SafetyQuest earn={earn} skip={skipQuest} muted={muted} />;
   else if (quest === "parkour") content = <ParkourQuest earn={earn} avatar={avatar} muted={muted} />;
-  else if (quest === "beats") content = <PraisePowerUp earn={earnSignalCheck} skip={skipQuest} muted={muted} />;
-  else if (quest === "faith") content = <FaithQuest earn={earn} muted={muted} />;
+  else if (quest === "beats") content = <MusicPowerUp earn={earnSignalCheck} skip={skipQuest} muted={muted} />;
+  else if (quest === "stories") content = <CourageCampfire earn={earn} muted={muted} />;
   else if (quest === "machine") content = <FeelingMachine earn={earn} skip={skipQuest} muted={muted} />;
   else if (quest === "grownups" && IS_REVIEW_EDITION) content = <GrownupGuide offlineStatus={offlineStatus} />;
   else content = <Home

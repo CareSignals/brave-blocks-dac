@@ -12,7 +12,7 @@ export type EasterEgg = {
 };
 
 export type BraveBlocksProfile = {
-  id: "generic" | "moses";
+  id: "generic";
   modeLabel: string;
   playerLabel: string;
   displayName: string | null;

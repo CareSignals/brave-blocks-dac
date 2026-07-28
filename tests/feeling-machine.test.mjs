@@ -5,7 +5,6 @@ import { narrationLines } from "../scripts/narration-lines.mjs";
 
 const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
-const workflow = await readFile(new URL("../.github/workflows/deploy-pages.yml", import.meta.url), "utf8");
 const packageFile = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
 const narrationIndex = JSON.parse(await readFile(new URL("../app/narration-index.json", import.meta.url), "utf8"));
 const childNarrationIndex = JSON.parse(await readFile(new URL("../app/narration-index.child.json", import.meta.url), "utf8"));
@@ -67,13 +66,9 @@ test("emotion labels and controls remain readable for early readers", () => {
   assert.match(css, /@media\(max-width:520px\)\{[\s\S]*?\.machine-story-grid\{grid-template-columns:1fr\}/);
 });
 
-test("public review deployment is generic while personalized child build remains available", () => {
-  assert.match(
-    workflow,
-    /Build REVIEW edition for deployment[\s\S]*?NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE: GENERIC/,
-  );
+test("the DAC review and child builds both use the generic profile", () => {
   assert.match(packageFile.scripts["pages:build:review"], /PROFILE=GENERIC/);
-  assert.match(packageFile.scripts["pages:build:child"], /PROFILE=MOSES/);
+  assert.match(packageFile.scripts["pages:build:child"], /PROFILE=GENERIC/);
   assert.match(page, /PLAYER NAME · STAYS ON THIS SCREEN/);
 });
 

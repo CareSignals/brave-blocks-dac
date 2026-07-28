@@ -89,7 +89,7 @@ const questIntroductions = [
   ["Build Mode", "Stack your support squad."],
   ["Safety Power-Ups", "Huge feeling. Safe body. Both can be true."],
   ["Pixel Parkour", "Jump slime. Grab snacks. Get the W."],
-  ["Faith Campfire", "Tap a story. Find a hope gem."],
+  ["Courage Campfire", "Tap a story. Find a courage gem."],
   ["Grown-up Guide", "Keep the fun child-led and the child’s answers their own."],
 ];
 
@@ -103,7 +103,8 @@ const pageReadouts = [
   "Build Mode. Tap your support blocks.",
   "Safety Power Ups. Pick a safe mission for your hands, body, words, and repairs.",
   "Pixel Parkour. Tap jump before slime or blocks. Then tap go.",
-  "Faith Campfire. Tap a Bible story to find a hope gem.",
+  "Music Power-Up. Pick a body signal, choose music with a trusted grown-up, and check the signal again.",
+  "Courage Campfire. Tap a Chaos Crew story and find a courage gem.",
   "Grown-up guide.",
 ];
 
@@ -148,10 +149,10 @@ const coOpMissions = [
 ];
 
 const stories = [
-  ["Jesus + Children", "Jesus made time for children. He showed them they matter and belong.", "I matter."],
-  ["The Lost Sheep", "The shepherd looked for one little sheep. Every single one mattered.", "I am worth finding."],
-  ["David + Goliath", "David was small. His courage and God’s help were bigger than his fear.", "Small can be brave."],
-  ["Noah’s Rainbow", "After a long storm, the rainbow was a sign of hope.", "Hard times can end."],
+  ["Axo + First Day", "Axo felt shaky. He found a safe grown-up and took one tiny step.", "Brave can be tiny."],
+  ["Cappy + Missing", "Cappy missed someone and let a safe person stay nearby.", "Missing and safe can both be true."],
+  ["Dumpling + Mistake", "Dumpling made a mess, told the truth, and helped repair it.", "Mistakes can be repaired."],
+  ["Both-Bot + Big Mix", "Both-Bot felt mad and sad. Both feelings were allowed.", "Two feelings can be true."],
 ];
 
 const machineFeelings = [
@@ -264,7 +265,7 @@ const lines = [
   "Music landing pad.",
   "Cozy landing pad.",
   "Move landing pad.",
-  "Prayer landing pad.",
+  "Quiet spot landing pad.",
   ...meetingRounds,
   ...meetingMoves.map((words) => `${words}. Nice move. Your own words have power.`),
   ...supportBlocks,
@@ -275,7 +276,9 @@ const lines = [
   "Jump ready!",
   "Boink! Tap jump first.",
   "Parkour W. You made it!",
-  "Jesus loves me. I am loved on easy days and hard days.",
+  "Music Power-Up. Pick the kind of power your body needs, then choose music with a trusted grown-up.",
+  "Music check complete. Every answer counts.",
+  "I matter on easy days and hard days. I can ask for help.",
   ...stories.flatMap(([title, story, gem]) => [
     `${title}. ${story} ${gem}`,
     `${story} ${gem}`,

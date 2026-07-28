@@ -46,25 +46,7 @@ assert.match(
 );
 
 if (profile === "GENERIC") {
-  const genericViolations = [];
-  const mosesOnlyPatterns = [
-    { label: "Moses name", pattern: /\bMoses\b/gi },
-    { label: "Moses mode label", pattern: /MOSES MODE/gi },
-    { label: "Moses station name", pattern: /Jesus Song Station/gi },
-    { label: "Moses power phrase", pattern: /I need a minute, bro/gi },
-  ];
-  for (const path of textFiles) {
-    const text = await readFile(path, "utf8");
-    for (const { label, pattern } of mosesOnlyPatterns) {
-      pattern.lastIndex = 0;
-      if (pattern.test(text)) genericViolations.push(`${relative(output, path)}: ${label}`);
-    }
-  }
-  assert.deepEqual(
-    genericViolations,
-    [],
-    `Generic build contains Moses-profile wording:\n${genericViolations.join("\n")}`,
-  );
+  assert.match(markup, /data-profile="generic"/, "The DAC build must use the generic profile.");
 }
 
 if (edition === "CHILD") {
@@ -110,10 +92,14 @@ if (edition === "CHILD") {
   assert.match(markup, /data-edition="review"/, "The export must identify itself as REVIEW.");
   assert.equal(
     manifest.name,
-    "Brave Blocks WRAP Team Review",
+    "Brave Blocks — Dependency Advocacy Center Review",
     "The review manifest must identify the review edition.",
   );
-  assert.match(markup, /WRAP TEAM REVIEW EDITION/, "The review banner must remain visible.");
+  assert.match(
+    markup,
+    /DEPENDENCY ADVOCACY CENTER REVIEW EDITION/,
+    "The DAC review banner must remain visible.",
+  );
   assert.deepEqual(
     narrationIndex,
     fullNarrationIndex,

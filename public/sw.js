@@ -5,9 +5,9 @@ const PROFILE = /^[A-Z][A-Z0-9_-]{0,31}$/.test(requestedProfile || "")
   ? requestedProfile
   : "DEFAULT";
 const BUILD_REVISION = "__BRAVE_BLOCKS_BUILD_REVISION__";
-const CACHE_PREFIX = "brave-blocks-";
-const CACHE = `${CACHE_PREFIX}${EDITION.toLowerCase()}-${PROFILE.toLowerCase()}-v12-${BUILD_REVISION}`;
-const BASE = "/brave-blocks";
+const CACHE_PREFIX = "brave-blocks-dac-";
+const CACHE = `${CACHE_PREFIX}${EDITION.toLowerCase()}-${PROFILE.toLowerCase()}-v13-${BUILD_REVISION}`;
+const BASE = new URL(".", self.location.href).pathname.replace(/\/$/, "");
 const READY_URL = `${BASE}/offline-ready.json`;
 const CORE = [
   `${BASE}/`,

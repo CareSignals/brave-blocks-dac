@@ -1,22 +1,37 @@
 import type { NextConfig } from "next";
 import { resolve } from "node:path";
 
-const requestedEdition = process.env.NEXT_PUBLIC_BRAVE_BLOCKS_EDITION?.trim().toUpperCase() || "REVIEW";
+const requestedEdition =
+  process.env.NEXT_PUBLIC_BRAVE_BLOCKS_EDITION?.trim().toUpperCase() ||
+  "REVIEW";
 if (requestedEdition !== "REVIEW" && requestedEdition !== "CHILD") {
-  throw new Error(`NEXT_PUBLIC_BRAVE_BLOCKS_EDITION must be REVIEW or CHILD, received "${requestedEdition}".`);
-}
-const requestedProfile = process.env.NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE?.trim().toUpperCase() || "GENERIC";
-if (requestedProfile !== "MOSES" && requestedProfile !== "GENERIC") {
-  throw new Error(`NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE must be MOSES or GENERIC, received "${requestedProfile}".`);
+  throw new Error(
+    `NEXT_PUBLIC_BRAVE_BLOCKS_EDITION must be REVIEW or CHILD, received "${requestedEdition}".`,
+  );
 }
 
+const requestedProfile =
+  process.env.NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE?.trim().toUpperCase() ||
+  "GENERIC";
+if (requestedProfile !== "GENERIC") {
+  throw new Error(
+    `NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE must be GENERIC, received "${requestedProfile}".`,
+  );
+}
+
+const isGitHubPages = process.env.GITHUB_PAGES === "true";
+const publicBasePath =
+  process.env.NEXT_PUBLIC_BASE_PATH ??
+  (isGitHubPages ? "/brave-blocks-dac" : "");
+
 const nextConfig: NextConfig = {
-  output: "export",
-  basePath: "/brave-blocks",
-  assetPrefix: "/brave-blocks/",
+  output: isGitHubPages ? "export" : undefined,
+  basePath: publicBasePath || undefined,
+  assetPrefix: publicBasePath ? `${publicBasePath}/` : undefined,
   env: {
     NEXT_PUBLIC_BRAVE_BLOCKS_EDITION: requestedEdition,
     NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE: requestedProfile,
+    NEXT_PUBLIC_BASE_PATH: publicBasePath,
   },
   images: {
     unoptimized: true,
@@ -25,7 +40,7 @@ const nextConfig: NextConfig = {
     if (config.cache && typeof config.cache === "object") {
       config.cache = {
         ...config.cache,
-        version: `${config.cache.version ?? "brave-blocks"}-${requestedEdition}-${requestedProfile}`,
+        version: `${config.cache.version ?? "brave-blocks-dac"}-${requestedEdition}`,
       };
     }
     config.resolve.alias["@edition-narration"] = resolve(
@@ -42,15 +57,11 @@ const nextConfig: NextConfig = {
     );
     config.resolve.alias["@active-profile"] = resolve(
       process.cwd(),
-      requestedProfile === "GENERIC"
-        ? "app/profile.generic.ts"
-        : "app/profile.moses.ts",
+      "app/profile.generic.ts",
     );
     config.resolve.alias["@song-library"] = resolve(
       process.cwd(),
-      requestedProfile === "GENERIC"
-        ? "app/song-library.generic.ts"
-        : "app/song-library.moses.ts",
+      "app/song-library.generic.ts",
     );
     return config;
   },

@@ -1,5 +1,5 @@
 {
-  "name": "site-creator-vinext-starter",
+  "name": "brave-blocks-dac",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -15,10 +15,10 @@
     "narration:child-index": "node scripts/generate-child-narration-index.mjs",
     "edition:finalize": "node scripts/finalize-edition.mjs",
     "edition:audit": "node scripts/audit-edition.mjs",
-    "pages:build:review": "NEXT_PUBLIC_BRAVE_BLOCKS_EDITION=REVIEW NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE=GENERIC next build --webpack && NEXT_PUBLIC_BRAVE_BLOCKS_EDITION=REVIEW NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE=GENERIC node scripts/finalize-edition.mjs",
-    "pages:build:child": "NEXT_PUBLIC_BRAVE_BLOCKS_EDITION=CHILD NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE=MOSES next build --webpack && NEXT_PUBLIC_BRAVE_BLOCKS_EDITION=CHILD NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE=MOSES node scripts/finalize-edition.mjs",
-    "pages:build:generic": "NEXT_PUBLIC_BRAVE_BLOCKS_EDITION=CHILD NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE=GENERIC next build --webpack && NEXT_PUBLIC_BRAVE_BLOCKS_EDITION=CHILD NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE=GENERIC node scripts/finalize-edition.mjs",
-    "praise:test": "node --test tests/praise-power-up.test.mjs",
+    "pages:build:review": "GITHUB_PAGES=true NEXT_PUBLIC_BASE_PATH=/brave-blocks-dac NEXT_PUBLIC_BRAVE_BLOCKS_EDITION=REVIEW NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE=GENERIC next build --webpack && GITHUB_PAGES=true NEXT_PUBLIC_BASE_PATH=/brave-blocks-dac NEXT_PUBLIC_BRAVE_BLOCKS_EDITION=REVIEW NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE=GENERIC node scripts/finalize-edition.mjs",
+    "pages:build:child": "GITHUB_PAGES=true NEXT_PUBLIC_BASE_PATH=/brave-blocks-dac NEXT_PUBLIC_BRAVE_BLOCKS_EDITION=CHILD NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE=GENERIC next build --webpack && GITHUB_PAGES=true NEXT_PUBLIC_BASE_PATH=/brave-blocks-dac NEXT_PUBLIC_BRAVE_BLOCKS_EDITION=CHILD NEXT_PUBLIC_BRAVE_BLOCKS_PROFILE=GENERIC node scripts/finalize-edition.mjs",
+    "pages:build:generic": "pnpm pages:build:child",
+    "music:test": "node --test tests/music-power-up.test.mjs",
     "offline:verify": "node scripts/verify-offline-pack.mjs",
     "offline:test": "node scripts/test-offline-first-load.mjs",
     "db:generate": "drizzle-kit generate"

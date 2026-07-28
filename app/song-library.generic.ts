@@ -1,10 +1,11 @@
 import type { PowerNeedId, SongLibrary, SongTrack } from "./song-library.types";
 
 const approvedExample = {
-  title: "Better Is One Day",
-  artist: "Boston Church",
-  url: "https://www.youtube.com/watch?v=ILEdpepg7D0",
+  title: "Choose a power song",
+  artist: "With a trusted grown-up",
+  url: "https://music.youtube.com/",
   icon: "🎵",
+  launchLabel: "OPEN APPROVED MUSIC",
 } as const;
 
 function exampleFor(category: PowerNeedId, prompt: string): SongTrack {
@@ -16,10 +17,10 @@ function exampleFor(category: PowerNeedId, prompt: string): SongTrack {
   };
 }
 
-// PLACEHOLDER SLOTS: replace or add family-approved links for a generic child.
+// Neutral starting point: a trusted grown-up chooses the music after the link opens.
 const songs: SongLibrary = {
   calm: [exampleFor("calm", "You can take one slow breath during the chorus.")],
-  brave: [exampleFor("brave", "You can stand tall like a brave warrior.")],
+  brave: [exampleFor("brave", "You can stand tall while you listen.")],
   comfort: [exampleFor("comfort", "You can sit close to a trusted grown-up.")],
   joy: [exampleFor("joy", "You can shake out your hands while you listen.")],
   sleep: [exampleFor("sleep", "You can let your shoulders drop while you listen.")],

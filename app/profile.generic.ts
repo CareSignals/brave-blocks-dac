@@ -7,7 +7,7 @@ const profile: BraveBlocksProfile = {
   displayName: null,
   avatarIcon: "🦎",
   avatarName: "Axo Maxxo",
-  stationTitle: "Praise Power-Up",
+  stationTitle: "Music Power-Up",
   stationSubtitle: "Music Power Station",
   musicName: "power song",
   stationIntro: "DJ Glorp found power tracks for every kind of signal.",

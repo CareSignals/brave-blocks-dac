@@ -17,7 +17,7 @@ export const reviewOnlyNarrationLines = new Set([
 ]);
 
 export const childEditionBannedTerms = [
-  { label: "WRAP", pattern: /\bWRAP\b/ },
+  { label: "professional review organization", pattern: /\bDependency Advocacy Center\b/i },
   { label: "review edition/team language", pattern: /\breview (?:edition|team|checklist|link)\b/i },
   { label: "de-identification language", pattern: /\bde-identified\b/i },
   { label: "professional preview", pattern: /\bprofessional preview\b/i },

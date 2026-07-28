@@ -5,7 +5,7 @@ import { currentEdition } from "./edition-policy.mjs";
 
 const root = process.cwd();
 const output = join(root, "out");
-const basePath = "/brave-blocks";
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "/brave-blocks-dac";
 const origin = "https://offline.brave-blocks.test";
 const edition = currentEdition();
 

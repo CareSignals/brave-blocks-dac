@@ -8,11 +8,9 @@ import {
   signalChanges,
   tracksForNeed,
   validateSongLibrary,
-} from "../app/praise-power-up.ts";
+} from "../app/music-power-up.ts";
 import genericProfile from "../app/profile.generic.ts";
-import mosesProfile from "../app/profile.moses.ts";
 import genericSongs from "../app/song-library.generic.ts";
-import mosesSongs from "../app/song-library.moses.ts";
 
 const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -33,16 +31,14 @@ test("all five power needs have a selectable, approved song", () => {
     powerNeeds.map(({ id }) => id),
     ["calm", "brave", "comfort", "joy", "sleep"],
   );
-  for (const library of [mosesSongs, genericSongs]) {
-    assert.deepEqual(validateSongLibrary(library), []);
-    for (const need of powerNeeds) {
-      const tracks = tracksForNeed(library, need.id);
-      assert(tracks.length > 0, `${need.label} must have at least one song.`);
-      for (const track of tracks) {
-        assert.equal(track.category, need.id);
-        assert(track.prompt?.trim(), `${track.id} needs an optional tiny mission.`);
-        assert.equal(new URL(safeExternalSongUrl(track.url)).protocol, "https:");
-      }
+  assert.deepEqual(validateSongLibrary(genericSongs), []);
+  for (const need of powerNeeds) {
+    const tracks = tracksForNeed(genericSongs, need.id);
+    assert(tracks.length > 0, `${need.label} must have at least one song.`);
+    for (const track of tracks) {
+      assert.equal(track.category, need.id);
+      assert(track.prompt?.trim(), `${track.id} needs an optional tiny mission.`);
+      assert.equal(new URL(safeExternalSongUrl(track.url)).protocol, "https:");
     }
   }
 });
@@ -61,15 +57,14 @@ test("song-link guard rejects insecure and child-response query data", () => {
   );
 });
 
-test("Moses mode uses one parent-curated playlist without a share-tracking token", () => {
+test("the generic music launch has no share-tracking token", () => {
   for (const need of powerNeeds) {
-    const [playlist] = mosesSongs[need.id];
+    const [playlist] = genericSongs[need.id];
     const url = new URL(playlist.url);
     assert.equal(url.origin, "https://music.youtube.com");
-    assert.equal(url.pathname, "/playlist");
-    assert.equal(url.searchParams.get("list"), "PLc1GIP9de-As");
+    assert.equal(url.pathname, "/");
     assert.equal(url.searchParams.has("si"), false);
-    assert.equal(playlist.launchLabel, "Play Moses’ Jesus Songs");
+    assert.equal(playlist.launchLabel, "OPEN APPROVED MUSIC");
   }
 });
 
@@ -86,35 +81,23 @@ test("every signal check is affirmed, including Not yet", () => {
   assert.doesNotMatch(signalAffirmation("not-yet"), /fail|wrong|try harder/i);
 });
 
-test("profiles separate Moses-only comfort details from generic core mode", () => {
-  assert.equal(mosesProfile.id, "moses");
+test("the DAC edition uses only the generic profile", () => {
   assert.equal(genericProfile.id, "generic");
-  assert(mosesProfile.favoriteComfortTools.length >= 5);
   assert(genericProfile.favoriteComfortTools.length >= 5);
-  assert(mosesProfile.easterEggs.length >= 2);
   assert(genericProfile.easterEggs.length >= 2);
-
-  const genericText = JSON.stringify(genericProfile);
-  assert.doesNotMatch(genericText, /\bMoses\b|MOSES MODE|I need a minute, bro/i);
-
-  const mosesText = JSON.stringify(mosesProfile);
-  assert.doesNotMatch(
-    mosesText,
-    /\bTPR\b|termination of parental rights|reunification services|\.26 trial|attorney|social worker/i,
-  );
 });
 
 test("all configurable icons use the existing pixel-art inventory", () => {
   const icons = [
     ...powerNeeds.map(({ icon }) => icon),
     ...signalChanges.map(({ icon }) => icon),
-    ...[genericProfile, mosesProfile].flatMap((profile) => [
+    ...[genericProfile].flatMap((profile) => [
       profile.avatarIcon,
       ...profile.favoriteComfortTools.map(({ icon }) => icon),
       ...profile.easterEggs.map(({ icon }) => icon),
       profile.animalCompanion?.icon,
     ]),
-    ...[genericSongs, mosesSongs].flatMap((library) =>
+    ...[genericSongs].flatMap((library) =>
       Object.values(library).flatMap((tracks) => tracks.map(({ icon }) => icon))),
   ].filter(Boolean);
   for (const icon of icons) {
@@ -122,7 +105,7 @@ test("all configurable icons use the existing pixel-art inventory", () => {
   }
 });
 
-test("Praise Power-Up opens a deliberate external link without embeds or autoplay", () => {
+test("Music Power-Up opens a deliberate external link without embeds or autoplay", () => {
   assert.match(pageSource, /target="_blank"/);
   assert.match(pageSource, /rel="noopener noreferrer external"/);
   assert.match(pageSource, /referrerPolicy="no-referrer"/);
@@ -160,7 +143,7 @@ test("child choices stay in component memory and are not transmitted or analyzed
   assert.doesNotMatch(pageSource, /googleAnalytics|gtag\s*\(|analytics\.|telemetry|mixpanel|amplitude/i);
   assert.match(serviceWorker, /profile: PROFILE/);
   assert.match(serviceWorker, /revision: BUILD_REVISION/);
-  assert.match(serviceWorker, /v12-\$\{BUILD_REVISION\}/);
+  assert.match(serviceWorker, /v13-\$\{BUILD_REVISION\}/);
   assert.match(serviceWorker, /PROFILE\.toLowerCase\(\)/);
   assert.match(pageSource, /updateViaCache: "none"/);
   assert.match(pageSource, /registration\.update\(\)/);
